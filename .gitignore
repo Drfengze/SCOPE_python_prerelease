@@ -18,3 +18,4 @@ build/
 dist/
 *.egg-info/
 output/
+VERIFICATION_ANALYSIS_REPORT.md
