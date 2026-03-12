@@ -23,6 +23,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from .constants import CONSTANTS, TEMP_RESPONSE
+from ._paths import get_default_input_dir
 from .spectral import SPECTRAL, SpectralBands
 from .types import Angles, Canopy, LeafBio, Meteo, Options, Soil
 from .supporting.leafangles import compute_canopy_lidf
@@ -87,11 +88,8 @@ def load_matlab_atmosphere(
 
     # Find data path
     if data_path is None:
-        # Try to find relative to this module
-        module_dir = os.path.dirname(os.path.abspath(__file__))
         possible_paths = [
-            os.path.join(module_dir, '..', 'input', 'radiationdata'),
-            os.path.join(module_dir, '..', '..', 'input', 'radiationdata'),
+            str(get_default_input_dir() / "radiationdata"),
         ]
         for p in possible_paths:
             if os.path.exists(p):

@@ -31,6 +31,7 @@ sys.path.insert(0, str(script_dir))
 
 # Import SCOPE modules
 from scope.spectral import SpectralBands
+from scope._paths import get_default_input_dir
 from scope.constants import CONSTANTS
 from scope.types import LeafBio, Canopy, Soil, Meteo, Angles, Options
 from scope.io.load_optipar import load_optipar
@@ -60,14 +61,14 @@ class SCOPEModel:
         Initialize SCOPE model.
 
         Args:
-            input_dir: Path to input directory (default: ../input relative to this file)
+            input_dir: Path to input directory (default: packaged scope/input or repo input)
         """
         # Set paths
         self.script_dir = Path(__file__).parent
         self.scope_dir = self.script_dir
 
         if input_dir is None:
-            self.input_dir = self.scope_dir / 'input'
+            self.input_dir = get_default_input_dir()
         else:
             self.input_dir = Path(input_dir)
 
@@ -78,7 +79,7 @@ class SCOPEModel:
         self.spectral = SpectralBands()
 
         # 3. Load optipar (SCOPE.m line 177)
-        self.optipar, self.wlP = load_optipar()
+        self.optipar, self.wlP = load_optipar(input_dir=self.input_dir)
 
         # 4. Define fixed canopy parameters (SCOPE.m lines 183-188)
         self.canopy_fixed = {

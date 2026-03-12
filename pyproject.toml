@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scope-model"
-version = "0.1.0"
+dynamic = ["version"]
 description = "SCOPE: Soil Canopy Observation, Photochemistry and Energy fluxes model - a radiative transfer and energy balance model for vegetated land surfaces"
 readme = "README.md"
 license = {text = "GPL-3.0"}
@@ -55,11 +55,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Drfengze/SIF"
-Repository = "https://github.com/Drfengze/SIF"
-Documentation = "https://scope-model.readthedocs.io"
-"Bug Tracker" = "https://github.com/Drfengze/SIF/issues"
-Changelog = "https://github.com/Drfengze/SIF/blob/main/SCOPE-master/python/CHANGELOG.md"
+Homepage = "https://github.com/Drfengze/SCOPE_python_prerelease"
+Repository = "https://github.com/Drfengze/SCOPE_python_prerelease"
+Documentation = "https://github.com/Drfengze/SCOPE_python_prerelease#readme"
+"Bug Tracker" = "https://github.com/Drfengze/SCOPE_python_prerelease/issues"
+Changelog = "https://github.com/Drfengze/SCOPE_python_prerelease/blob/main/CHANGELOG.md"
 
 [project.scripts]
 scope = "scope.main:main"
@@ -67,8 +67,14 @@ scope = "scope.main:main"
 [tool.setuptools.packages.find]
 where = ["."]
 
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {attr = "scope._version.__version__"}
+
 [tool.setuptools.package-data]
-scope = ["py.typed"]
+scope = ["py.typed", "input/**/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

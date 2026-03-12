@@ -16,7 +16,7 @@ SCOPE is a vertical (1-D) integrated radiative transfer and energy balance model
 ## Installation
 
 ```bash
-pip install scope-model (preparing)
+pip install scope-model
 ```
 
 For development:
@@ -31,15 +31,15 @@ pip install -e ".[dev]"
 
 ```python
 import scope
-from scope.main import run_scope
 from scope.types import Angles, Canopy, LeafBio, Meteo, Options, Soil
+
 leafbio = LeafBio(Cab=40.0, Cca=10.0, Vcmax25=60.0)
 canopy = Canopy(LAI=3.0, hc=2.0)
 soil = Soil()
 meteo = Meteo(Rin=600.0, Rli=300.0, Ta=20.0, p=970.0, ea=15.0, u=2.0, Ca=410.0)
 angles = Angles(tts=30.0, tto=0.0, psi=0.0)
 options = Options(lite=True, calc_fluor=True, calc_ebal=True)
-output = run_scope(
+output = scope.run_scope(
     leafbio=leafbio,
     canopy=canopy,
     soil=soil,

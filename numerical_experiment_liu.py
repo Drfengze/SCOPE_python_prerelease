@@ -24,15 +24,16 @@ from pathlib import Path
 sys.path.insert(0, '.')
 
 from scope.spectral import SpectralBands
+from scope._paths import get_default_input_dir
 from scope.constants import CONSTANTS
 from scope.types import LeafBio, Canopy, Soil, Meteo, Angles, Options
-from scope.io.load_optipar import load_optipar
-from scope.io.load_atmo import load_atmo, aggreg
+from scope.io.load_optipar import load_optipar, load_soil_spectra
+from scope.io.load_atmo import load_atmo
 from scope.rtm.fluspect import fluspect
 from scope.rtm.rtmo import rtmo
 from scope.rtm.rtmf import rtmf
 from scope.fluxes.ebal import ebal
-from scope.supporting.leafangles import compute_canopy_lidf, leafangles
+from scope.supporting.leafangles import compute_canopy_lidf
 
 
 # Parameter values (Table 1 - Liu et al.)
@@ -54,7 +55,7 @@ Ta_values = [15, 25, 35]
 Vcmax_values = [30, 100, 160]
 
 
-def load_soil_spectrum_from_file(spectral):
+def load_soil_spectrum_from_file(spectral, input_dir=None):
     """Load soil reflectance from soilnew.txt spectrum 2.
 
     Args:
@@ -63,10 +64,10 @@ def load_soil_spectrum_from_file(spectral):
     Returns:
         soil_refl: array of soil reflectance interpolated to wlS grid
     """
-    soil_file = Path(__file__).parent / 'input' / 'soil_spectra' / 'soilnew.txt'
-    data = np.loadtxt(str(soil_file))
-    wl_soil = data[:, 0]          # 400-2399 nm
-    refl_soil = data[:, 2]        # spectrum 2 (column index 2)
+    wl_soil, refl_soil = load_soil_spectra(
+        input_dir=input_dir,
+        reflectance_column=2,
+    )
     # Interpolate to full wlS grid (includes thermal wavelengths)
     soil_refl = np.interp(spectral.wlS, wl_soil, refl_soil,
                           left=refl_soil[0], right=refl_soil[-1])
@@ -240,7 +241,7 @@ def _run_scenario(params):
         return nan_result
 
 
-def load_modtran_atmo(spectral, atmfile=None):
+def load_modtran_atmo(spectral, atmfile=None, input_dir=None):
     """Load MODTRAN atmospheric data.
 
     Args:
@@ -250,8 +251,13 @@ def load_modtran_atmo(spectral, atmfile=None):
     Returns:
         Dictionary with 'M' key containing aggregated MODTRAN matrix
     """
+    if input_dir is None:
+        input_dir = get_default_input_dir()
+    else:
+        input_dir = Path(input_dir)
+
     if atmfile is None:
-        atmfile = str(Path(__file__).parent / 'input' / 'radiationdata' / 'FLEX-S3_std.atm')
+        atmfile = input_dir / 'radiationdata' / 'FLEX-S3_std.atm'
 
     atmfile = Path(atmfile)
     if not atmfile.exists():
@@ -369,7 +375,7 @@ def run_single_scenario(leafbio, canopy, soil, meteo, angles, options,
     }
 
 
-def run_experiment(output_dir=None, max_scenarios=None, atmfile=None, nworkers=None):
+def run_experiment(output_dir=None, max_scenarios=None, atmfile=None, nworkers=None, input_dir=None):
     """Run the full numerical experiment for Liu et al. paper reproduction.
 
     Args:
@@ -377,6 +383,7 @@ def run_experiment(output_dir=None, max_scenarios=None, atmfile=None, nworkers=N
         max_scenarios: Maximum number of scenarios to run (for testing)
         atmfile: Path to MODTRAN .atm file. If None, uses default.
         nworkers: Number of parallel workers. Default: mp.cpu_count().
+        input_dir: Override the default SCOPE input directory.
     """
 
     if output_dir is None:
@@ -406,17 +413,19 @@ def run_experiment(output_dir=None, max_scenarios=None, atmfile=None, nworkers=N
 
     # Load optipar ONCE outside the loop
     print('Loading optipar...')
-    optipar, wlP = load_optipar()
+    if input_dir is None:
+        input_dir = get_default_input_dir()
+    optipar, wlP = load_optipar(input_dir=input_dir)
     print('Loaded optipar')
 
     # Load MODTRAN atmosphere ONCE outside the loop
     print('Loading MODTRAN atmospheric data...')
-    atmo = load_modtran_atmo(spectral, atmfile)
+    atmo = load_modtran_atmo(spectral, atmfile, input_dir=input_dir)
     print(f'Loaded MODTRAN data with M matrix shape: {atmo["M"].shape}')
 
     # Load soil spectrum ONCE
     print('Loading soil spectrum from soilnew.txt (spectrum 2)...')
-    soil_refl = load_soil_spectrum_from_file(spectral)
+    soil_refl = load_soil_spectrum_from_file(spectral, input_dir=input_dir)
     print(f'Loaded soil spectrum: {len(soil_refl)} wavelengths, '
           f'range [{soil_refl[~np.isnan(soil_refl)].min():.4f}, {soil_refl[~np.isnan(soil_refl)].max():.4f}]')
 
@@ -535,6 +544,8 @@ if __name__ == '__main__':
                         help='Path to MODTRAN .atm file (default: FLEX-S3_std.atm)')
     parser.add_argument('--nworkers', type=int, default=None,
                         help='Number of parallel workers (default: all CPU cores)')
+    parser.add_argument('--input-dir', type=str, default=None,
+                        help='Override the default SCOPE input directory')
 
     args = parser.parse_args()
 
@@ -543,4 +554,5 @@ if __name__ == '__main__':
         max_scenarios=args.max_scenarios,
         atmfile=args.atmfile,
         nworkers=args.nworkers,
+        input_dir=args.input_dir,
     )

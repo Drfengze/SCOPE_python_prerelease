@@ -3,7 +3,7 @@
 Python implementation of the SCOPE radiative transfer and energy balance model.
 
 Example usage:
-    >>> from scope import Constants, SpectralBands
+    >>> from scope import Constants, SpectralBands, run_scope
     >>> from scope.types import LeafBio, Canopy, Soil, Meteo, Angles
     >>>
     >>> constants = Constants()
@@ -13,8 +13,10 @@ Example usage:
     >>> canopy = Canopy(LAI=3.0, hc=2.0)
 """
 
+from ._version import __version__
 from .constants import CONSTANTS, TEMP_RESPONSE, Constants, TemperatureResponseParams
 from .spectral import SPECTRAL, SpectralBands, SpectralRegion
+from .main import run_scope
 
 # Import submodules for convenience
 from . import rtm
@@ -22,8 +24,6 @@ from . import fluxes
 from . import supporting
 from . import types
 from . import io
-
-__version__ = "0.1.0"
 
 __all__ = [
     # Version
@@ -37,6 +37,7 @@ __all__ = [
     "SpectralBands",
     "SpectralRegion",
     "SPECTRAL",
+    "run_scope",
     # Submodules
     "rtm",
     "fluxes",

@@ -6,6 +6,8 @@ Translated from: src/IO/setoptions.csv and related option handling.
 from dataclasses import dataclass, field
 from typing import Literal
 
+from .._paths import get_default_input_dir
+
 
 @dataclass
 class Options:
@@ -123,7 +125,7 @@ class FilePaths:
         timeseries_file: Time series input file (if simulation=1)
     """
 
-    input_dir: str = "input"
+    input_dir: str = field(default_factory=lambda: str(get_default_input_dir()))
     output_dir: str = "output"
     soil_file: str = "soil_spectra/soilnew.txt"
     optipar_file: str = "fluspect_parameters/Optipar2021_ProspectPRO.mat"

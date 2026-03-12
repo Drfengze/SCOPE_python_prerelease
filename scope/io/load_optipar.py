@@ -10,6 +10,7 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy.io import loadmat
 
+from .._paths import get_default_input_dir
 from ..rtm.fluspect import OptiPar
 from ..rtm.bsm import BSMSpectra
 
@@ -29,8 +30,7 @@ def load_optipar(
     """
     if filepath is None:
         if input_dir is None:
-            # Default to SCOPE-master/input
-            input_dir = Path(__file__).parent.parent.parent / "input"
+            input_dir = get_default_input_dir()
         else:
             input_dir = Path(input_dir)
 
@@ -83,7 +83,7 @@ def load_bsm_spectra(
     """
     if optipar_path is None:
         if input_dir is None:
-            input_dir = Path(__file__).parent.parent.parent / "input"
+            input_dir = get_default_input_dir()
         else:
             input_dir = Path(input_dir)
 
@@ -112,19 +112,22 @@ def load_bsm_spectra(
 def load_soil_spectra(
     filepath: Optional[str] = None,
     input_dir: Optional[str] = None,
+    reflectance_column: int = 1,
 ) -> Tuple[NDArray[np.float64], NDArray[np.float64]]:
     """Load soil reflectance spectra from text file.
 
     Args:
         filepath: Full path to soil spectra file (optional)
         input_dir: SCOPE input directory containing soil_spectra/
+        reflectance_column: Column index to use for reflectance when the
+            file contains wavelength plus multiple spectra.
 
     Returns:
         Tuple of (wavelengths, soil_reflectance)
     """
     if filepath is None:
         if input_dir is None:
-            input_dir = Path(__file__).parent.parent.parent / "input"
+            input_dir = get_default_input_dir()
         else:
             input_dir = Path(input_dir)
 
@@ -142,8 +145,14 @@ def load_soil_spectra(
         soil_refl = data
         wl = np.arange(400, 400 + len(data))
     else:
-        # Two columns: wavelength, reflectance
+        if reflectance_column >= data.shape[1]:
+            raise ValueError(
+                f"Requested reflectance column {reflectance_column} but file "
+                f"only has {data.shape[1]} columns"
+            )
+
+        # First column is wavelength, selected column is reflectance
         wl = data[:, 0]
-        soil_refl = data[:, 1]
+        soil_refl = data[:, reflectance_column]
 
     return wl, soil_refl

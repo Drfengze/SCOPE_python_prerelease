@@ -2,6 +2,7 @@
 % Based on numerical_experiment_matlab_simple.m
 % Uses MODTRAN atmospheric data for realistic spectral irradiance
 % instead of the simplified 70/30 direct/diffuse Gaussian model.
+% Based on https://www.sciencedirect.com/science/article/pii/S0034425720300456
 
 clear; clc;
 

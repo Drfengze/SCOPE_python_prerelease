@@ -18,6 +18,7 @@ from datetime import datetime
 sys.path.insert(0, '.')
 
 from scope.spectral import SpectralBands
+from scope._paths import get_default_input_dir
 from scope.constants import CONSTANTS
 from scope.types import LeafBio, Canopy, Soil, Meteo, Angles, Options
 from scope.io.load_optipar import load_optipar
@@ -178,7 +179,7 @@ def run_single_scenario(leafbio, canopy, soil, meteo, angles, options,
     }
 
 
-def run_experiment(output_dir=None, max_scenarios=None):
+def run_experiment(output_dir=None, max_scenarios=None, input_dir=None):
     """Run the full numerical experiment."""
 
     if output_dir is None:
@@ -198,7 +199,9 @@ def run_experiment(output_dir=None, max_scenarios=None):
 
     # Load optipar ONCE outside the loop
     print('Loading optipar...')
-    optipar, wlP = load_optipar()
+    if input_dir is None:
+        input_dir = get_default_input_dir()
+    optipar, wlP = load_optipar(input_dir=input_dir)
     print('Loaded optipar')
 
     # Preallocate results
@@ -472,10 +475,13 @@ if __name__ == '__main__':
                         help='Maximum scenarios to run (for testing)')
     parser.add_argument('--output-dir', type=str, default=None,
                         help='Output directory for results')
+    parser.add_argument('--input-dir', type=str, default=None,
+                        help='Override the default SCOPE input directory')
 
     args = parser.parse_args()
 
     df = run_experiment(
         output_dir=args.output_dir,
         max_scenarios=args.max_scenarios,
+        input_dir=args.input_dir,
     )

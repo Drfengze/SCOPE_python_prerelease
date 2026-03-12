@@ -1,15 +1,15 @@
-Metadata-Version: 2.4
+Metadata-Version: 2.1
 Name: scope-model
 Version: 0.1.0
 Summary: SCOPE: Soil Canopy Observation, Photochemistry and Energy fluxes model - a radiative transfer and energy balance model for vegetated land surfaces
 Author: Huaize Feng
 Maintainer: Huaize Feng
 License: GPL-3.0
-Project-URL: Homepage, https://github.com/Drfengze/SIF
-Project-URL: Repository, https://github.com/Drfengze/SIF
-Project-URL: Documentation, https://scope-model.readthedocs.io
-Project-URL: Bug Tracker, https://github.com/Drfengze/SIF/issues
-Project-URL: Changelog, https://github.com/Drfengze/SIF/blob/main/SCOPE-master/python/CHANGELOG.md
+Project-URL: Homepage, https://github.com/Drfengze/SCOPE_python_prerelease
+Project-URL: Repository, https://github.com/Drfengze/SCOPE_python_prerelease
+Project-URL: Documentation, https://github.com/Drfengze/SCOPE_python_prerelease#readme
+Project-URL: Bug Tracker, https://github.com/Drfengze/SCOPE_python_prerelease/issues
+Project-URL: Changelog, https://github.com/Drfengze/SCOPE_python_prerelease/blob/main/CHANGELOG.md
 Keywords: remote sensing,vegetation,radiative transfer,photosynthesis,fluorescence,energy balance,SCOPE,SIF,canopy
 Classifier: Development Status :: 3 - Alpha
 Classifier: Intended Audience :: Science/Research
@@ -58,24 +58,45 @@ pip install scope-model
 For development:
 
 ```bash
-git clone https://github.com/Drfengze/SIF.git
-cd SIF/SCOPE-master/python
+git clone https://github.com/Drfengze/SCOPE_python_prerelease.git
+cd SCOPE_python_prerelease
 pip install -e ".[dev]"
 ```
 
 ## Quick Start
 
 ```python
-from scope import Constants, SpectralBands
-from scope.types import Options, LeafBio, Canopy, Soil, Meteo, Angles
+import scope
+from scope.types import Angles, Canopy, LeafBio, Meteo, Options, Soil
 
-# Initialize constants and spectral definitions
-constants = Constants()
-spectral = SpectralBands()
-
-# Define input parameters
-leafbio = LeafBio(Cab=40.0, Vcmax25=60.0)
+leafbio = LeafBio(Cab=40.0, Cca=10.0, Vcmax25=60.0)
 canopy = Canopy(LAI=3.0, hc=2.0)
+soil = Soil()
+meteo = Meteo(Rin=600.0, Rli=300.0, Ta=20.0, p=970.0, ea=15.0, u=2.0, Ca=410.0)
+angles = Angles(tts=30.0, tto=0.0, psi=0.0)
+options = Options(lite=True, calc_fluor=True, calc_ebal=True)
+output = scope.run_scope(
+    leafbio=leafbio,
+    canopy=canopy,
+    soil=soil,
+    meteo=meteo,
+    angles=angles,
+    options=options,
+)
+summary = {
+    "F685": getattr(output.fluorescence, "F685", None),
+    "F740": getattr(output.fluorescence, "F740", None),
+    "F761": getattr(output.fluorescence, "F761", None),
+    "Eouto": getattr(output.rad, "Eouto", None),
+    "Rntot": output.fluxes.get("Rntot"),
+    "lEtot": output.fluxes.get("lEtot"),
+    "Htot": output.fluxes.get("Htot"),
+    "Actot": output.fluxes.get("Actot"),
+    "Tcave": output.fluxes.get("Tcave"),
+    "Tsave": output.fluxes.get("Tsave"),
+}
+
+summary
 ```
 
 ## Package Structure
@@ -130,7 +151,6 @@ scope/
 - van der Tol, C., Verhoef, W., Timmermans, J., Verhoef, A., & Su, Z. (2009).
   An integrated model of soil-canopy spectral radiances, photosynthesis,
   fluorescence, temperature and energy balance. *Biogeosciences*, 6(12), 3109-3129.
-
 - Yang, P., et al. (2021). SCOPE 2.0: a model to simulate vegetated land surface
   fluxes and satellite signals. *Geoscientific Model Development*, 14, 4697-4712.
 

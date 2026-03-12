@@ -21,15 +21,16 @@ from pathlib import Path
 sys.path.insert(0, '.')
 
 from scope.spectral import SpectralBands
+from scope._paths import get_default_input_dir
 from scope.constants import CONSTANTS
 from scope.types import LeafBio, Canopy, Soil, Meteo, Angles, Options
 from scope.io.load_optipar import load_optipar
-from scope.io.load_atmo import load_atmo, aggreg
+from scope.io.load_atmo import load_atmo
 from scope.rtm.fluspect import fluspect
 from scope.rtm.rtmo import rtmo
 from scope.rtm.rtmf import rtmf
 from scope.fluxes.ebal import ebal
-from scope.supporting.leafangles import compute_canopy_lidf, leafangles
+from scope.supporting.leafangles import compute_canopy_lidf
 
 
 # Parameter values (Table 2) - matches MATLAB numerical_experiment_matlab_mod.m
@@ -228,7 +229,7 @@ def _run_scenario(params):
         return nan_result
 
 
-def load_modtran_atmo(spectral, atmfile=None):
+def load_modtran_atmo(spectral, atmfile=None, input_dir=None):
     """Load MODTRAN atmospheric data.
 
     Args:
@@ -238,9 +239,13 @@ def load_modtran_atmo(spectral, atmfile=None):
     Returns:
         Dictionary with 'M' key containing aggregated MODTRAN matrix
     """
+    if input_dir is None:
+        input_dir = get_default_input_dir()
+    else:
+        input_dir = Path(input_dir)
+
     if atmfile is None:
-        # Default MODTRAN file
-        atmfile = str(Path(__file__).parent / 'input' / 'radiationdata' / 'FLEX-S3_std.atm')
+        atmfile = input_dir / 'radiationdata' / 'FLEX-S3_std.atm'
 
     atmfile = Path(atmfile)
     if not atmfile.exists():
@@ -361,7 +366,7 @@ def run_single_scenario(leafbio, canopy, soil, meteo, angles, options,
     }
 
 
-def run_experiment(output_dir=None, max_scenarios=None, atmfile=None, nworkers=None):
+def run_experiment(output_dir=None, max_scenarios=None, atmfile=None, nworkers=None, input_dir=None):
     """Run the full numerical experiment using MODTRAN atmosphere.
 
     Args:
@@ -369,6 +374,7 @@ def run_experiment(output_dir=None, max_scenarios=None, atmfile=None, nworkers=N
         max_scenarios: Maximum number of scenarios to run (for testing)
         atmfile: Path to MODTRAN .atm file. If None, uses default.
         nworkers: Number of parallel workers. Default: mp.cpu_count().
+        input_dir: Override the default SCOPE input directory.
     """
 
     if output_dir is None:
@@ -401,12 +407,14 @@ def run_experiment(output_dir=None, max_scenarios=None, atmfile=None, nworkers=N
 
     # Load optipar ONCE outside the loop
     print('Loading optipar...')
-    optipar, wlP = load_optipar()
+    if input_dir is None:
+        input_dir = get_default_input_dir()
+    optipar, wlP = load_optipar(input_dir=input_dir)
     print('Loaded optipar')
 
     # Load MODTRAN atmosphere ONCE outside the loop
     print('Loading MODTRAN atmospheric data...')
-    atmo = load_modtran_atmo(spectral, atmfile)
+    atmo = load_modtran_atmo(spectral, atmfile, input_dir=input_dir)
     print(f'Loaded MODTRAN data with M matrix shape: {atmo["M"].shape}')
 
     # Preallocate results
@@ -524,6 +532,8 @@ if __name__ == '__main__':
                         help='Path to MODTRAN .atm file (default: FLEX-S3_std.atm)')
     parser.add_argument('--nworkers', type=int, default=None,
                         help='Number of parallel workers (default: all CPU cores)')
+    parser.add_argument('--input-dir', type=str, default=None,
+                        help='Override the default SCOPE input directory')
 
     args = parser.parse_args()
 
@@ -532,4 +542,5 @@ if __name__ == '__main__':
         max_scenarios=args.max_scenarios,
         atmfile=args.atmfile,
         nworkers=args.nworkers,
+        input_dir=args.input_dir,
     )

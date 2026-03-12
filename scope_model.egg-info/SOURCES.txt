@@ -3,6 +3,8 @@ MANIFEST.in
 README.md
 pyproject.toml
 scope/__init__.py
+scope/_paths.py
+scope/_version.py
 scope/constants.py
 scope/main.py
 scope/py.typed
@@ -13,6 +15,43 @@ scope/fluxes/biochemical.py
 scope/fluxes/ebal.py
 scope/fluxes/heatfluxes.py
 scope/fluxes/resistances.py
+scope/input/filenames.csv
+scope/input/input_data_default.csv
+scope/input/input_data_latin_hypercube.csv
+scope/input/mSCOPE.csv
+scope/input/setoptions.csv
+scope/input/dataset dat/Rin_.dat
+scope/input/dataset dat/Rli_.dat
+scope/input/dataset dat/Ta_.dat
+scope/input/dataset dat/ea_.dat
+scope/input/dataset dat/p_.dat
+scope/input/dataset dat/readme.txt
+scope/input/dataset dat/t_.dat
+scope/input/dataset dat/table_Jmax_.dat
+scope/input/dataset dat/table_Vcmax_.dat
+scope/input/dataset dat/u_.dat
+scope/input/dataset dat/year_.dat
+scope/input/dataset for_verification/input_borders.csv
+scope/input/dataset for_verification/input_data_latin_hypercube_ts.csv
+scope/input/dataset mSCOPE_ts/ec_berkeley.csv
+scope/input/dataset mSCOPE_ts/input_mSCOPE_timeseries.csv
+scope/input/dataset mSCOPE_ts/interpolatable.csv
+scope/input/dataset mSCOPE_ts/ts_input.csv
+scope/input/directional/brdf_angles.dat
+scope/input/directional/brdf_angles2.dat
+scope/input/directional/brdf_angles_no_oversampling.dat
+scope/input/fluspect_parameters/Optipar2017_ProspectD.mat
+scope/input/fluspect_parameters/Optipar2021_ProspectPRO_CX.mat
+scope/input/leafangles/LIDFs.png
+scope/input/leafangles/soybean_minngold_leafangles.dat
+scope/input/leafangles/soybean_wildtype_leafangles.dat
+scope/input/radiationdata/Esky_.dat
+scope/input/radiationdata/Esun_.dat
+scope/input/radiationdata/FLEX-S3_std.atm
+scope/input/radiationdata/FLEX-S3_std.tp5
+scope/input/radiationdata/desktop.ini
+scope/input/radiationdata/example_rad_file.csv
+scope/input/soil_spectra/soilnew.txt
 scope/io/__init__.py
 scope/io/config_loader.py
 scope/io/load_atmo.py
