@@ -1,6 +1,10 @@
 __pycache__/
 *.py[cod]
 *.so
+*.egg
+*.nbi
+*.nbc
+
 .DS_Store
 .pytest_cache/
 .coverage
@@ -13,3 +17,4 @@ venv/
 build/
 dist/
 *.egg-info/
+output/
