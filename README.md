@@ -16,14 +16,14 @@ SCOPE is a vertical (1-D) integrated radiative transfer and energy balance model
 ## Installation
 
 ```bash
-pip install scope-model
+pip install scope-model (preparing)
 ```
 
 For development:
 
 ```bash
 git clone https://github.com/Drfengze/SCOPE_python_prerelease.git
-cd SIF/SCOPE-master/python
+cd SCOPE_python_prerelease
 pip install -e ".[dev]"
 ```
 

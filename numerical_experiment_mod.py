@@ -5,7 +5,7 @@ Numerical Experiment - MODTRAN Version.
 This version uses MODTRAN atmospheric data for realistic spectral irradiance,
 instead of the simplified 70/30 direct/diffuse Gaussian model.
 
-Based on numerical_experiment_simple.py and scope_main.py
+Based on https://www.sciencedirect.com/science/article/pii/S0034425720300456
 """
 
 import sys
