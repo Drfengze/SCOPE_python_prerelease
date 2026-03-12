@@ -16,7 +16,7 @@ SCOPE is a vertical (1-D) integrated radiative transfer and energy balance model
 ## Installation
 
 ```bash
-pip install scope-model
+pip install scope-model (not yet)
 ```
 
 For development:
