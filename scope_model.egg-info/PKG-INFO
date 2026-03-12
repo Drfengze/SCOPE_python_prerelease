@@ -1,0 +1,139 @@
+Metadata-Version: 2.4
+Name: scope-model
+Version: 0.1.0
+Summary: SCOPE: Soil Canopy Observation, Photochemistry and Energy fluxes model - a radiative transfer and energy balance model for vegetated land surfaces
+Author: Huaize Feng
+Maintainer: Huaize Feng
+License: GPL-3.0
+Project-URL: Homepage, https://github.com/Drfengze/SIF
+Project-URL: Repository, https://github.com/Drfengze/SIF
+Project-URL: Documentation, https://scope-model.readthedocs.io
+Project-URL: Bug Tracker, https://github.com/Drfengze/SIF/issues
+Project-URL: Changelog, https://github.com/Drfengze/SIF/blob/main/SCOPE-master/python/CHANGELOG.md
+Keywords: remote sensing,vegetation,radiative transfer,photosynthesis,fluorescence,energy balance,SCOPE,SIF,canopy
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Atmospheric Science
+Classifier: Topic :: Scientific/Engineering :: Physics
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.24
+Requires-Dist: scipy>=1.10
+Requires-Dist: pandas>=2.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0; extra == "dev"
+Requires-Dist: build; extra == "dev"
+Requires-Dist: twine; extra == "dev"
+
+# SCOPE Python
+
+Python implementation of the [SCOPE](https://scope-model.readthedocs.io) (Soil Canopy Observation, Photochemistry and Energy fluxes) model.
+
+## Overview
+
+SCOPE is a vertical (1-D) integrated radiative transfer and energy balance model for vegetated land surfaces. It simulates:
+
+- **Leaf and canopy optical properties** (PROSPECT + SAIL)
+- **Solar-induced fluorescence (SIF)** emission
+- **Photosynthesis** (Farquhar model) and stomatal conductance (Ball-Berry)
+- **Energy balance** and surface temperature
+- **Outgoing radiation**: reflected, emitted, and fluorescence
+- **Directional reflectance** (BRDF) and vegetation indices (PRI)
+
+## Installation
+
+```bash
+pip install scope-model
+```
+
+For development:
+
+```bash
+git clone https://github.com/Drfengze/SIF.git
+cd SIF/SCOPE-master/python
+pip install -e ".[dev]"
+```
+
+## Quick Start
+
+```python
+from scope import Constants, SpectralBands
+from scope.types import Options, LeafBio, Canopy, Soil, Meteo, Angles
+
+# Initialize constants and spectral definitions
+constants = Constants()
+spectral = SpectralBands()
+
+# Define input parameters
+leafbio = LeafBio(Cab=40.0, Vcmax25=60.0)
+canopy = Canopy(LAI=3.0, hc=2.0)
+```
+
+## Package Structure
+
+```
+scope/
+├── constants.py      # Physical constants
+├── spectral.py       # Spectral band definitions
+├── main.py           # Main simulation runner
+├── types/            # Typed dataclass structures
+│   ├── angles.py     #   Solar/viewing geometry
+│   ├── canopy.py     #   Canopy properties
+│   ├── leafbio.py    #   Leaf biochemistry
+│   ├── meteo.py      #   Meteorological data
+│   ├── options.py    #   Simulation options
+│   ├── radiation.py  #   Radiation outputs
+│   └── soil.py       #   Soil properties
+├── rtm/              # Radiative transfer models
+│   ├── fluspect.py   #   Leaf optics (PROSPECT + fluorescence)
+│   ├── bsm.py        #   Soil reflectance (BSM)
+│   ├── rtmo.py       #   Canopy optical RT (SAIL-based)
+│   ├── rtmf.py       #   Fluorescence RT
+│   ├── rtmt.py       #   Thermal RT
+│   └── rtmz.py       #   Xanthophyll/PRI
+├── fluxes/           # Energy balance & biochemistry
+│   ├── biochemical.py  # Farquhar photosynthesis
+│   ├── ebal.py         # Energy balance iteration
+│   ├── heatfluxes.py   # Sensible/latent heat
+│   └── resistances.py  # Aerodynamic resistances
+├── supporting/       # Utility functions
+│   ├── physics.py    #   Planck, vapor pressure, etc.
+│   ├── leafangles.py #   Leaf angle distributions
+│   ├── meanleaf.py   #   Leaf averaging
+│   └── integration.py #  Numerical integration
+└── io/               # Input/output
+    ├── config_loader.py   # Configuration loading
+    ├── load_timeseries.py # Time series data
+    ├── load_atmo.py       # Atmospheric data
+    ├── load_optipar.py    # Optical parameters
+    └── output_writer.py   # Output files
+```
+
+## Requirements
+
+- Python >= 3.10
+- NumPy >= 1.24
+- SciPy >= 1.10
+- Pandas >= 2.0
+
+## References
+
+- van der Tol, C., Verhoef, W., Timmermans, J., Verhoef, A., & Su, Z. (2009).
+  An integrated model of soil-canopy spectral radiances, photosynthesis,
+  fluorescence, temperature and energy balance. *Biogeosciences*, 6(12), 3109-3129.
+
+- Yang, P., et al. (2021). SCOPE 2.0: a model to simulate vegetated land surface
+  fluxes and satellite signals. *Geoscientific Model Development*, 14, 4697-4712.
+
+## License
+
+GPL-3.0

@@ -1,0 +1,6 @@
+dist
+experiment_results
+figures
+input
+output
+scope
