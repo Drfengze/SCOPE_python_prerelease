@@ -111,6 +111,7 @@ scope/
 - NumPy >= 1.24
 - SciPy >= 1.10
 - Pandas >= 2.0
+- Numba
 
 ## References
 
