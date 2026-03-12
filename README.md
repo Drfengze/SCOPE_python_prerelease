@@ -1,4 +1,6 @@
-# SCOPE Python by Huaize Feng from Ryulab in Seoul National University
+
+
+# SCOPE Python by [Huaize Feng](mailto:mrhuaize@gmail.com) from [Ryulab in Seoul National University](https://www.environment.snu.ac.kr/)
 
 Python implementation of the [SCOPE](https://scope-model.readthedocs.io) (Soil Canopy Observation, Photochemistry and Energy fluxes) model.
 
